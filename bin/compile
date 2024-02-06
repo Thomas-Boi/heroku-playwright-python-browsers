@@ -7,4 +7,5 @@ BUILD_DIR=$1
 
 # modify the installation location
 export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/browsers
-playwright install --with-deps chromium
+# playwright install --with-deps chromium
+playwright install chromium
