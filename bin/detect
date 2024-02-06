@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# taken from https://github.com/playwright-community/heroku-playwright-buildpack/blob/master/bin/detect
+echo "Playwright"
+exit 0
