@@ -6,6 +6,10 @@ set -e
 BUILD_DIR=$1
 
 # modify the installation location
+if [ -z "$INSTALL_PATH" ]; then
+  INSTALL_PATH="/browsers"
+fi
+
+echo "Install path is $INSTALL_PATH"
 export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/browsers
-# playwright install --with-deps chromium
 playwright install chromium
