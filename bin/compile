@@ -10,6 +10,8 @@ if [ -z "$INSTALL_PATH" ]; then
   INSTALL_PATH="/browsers"
 fi
 
-echo "Install path is $INSTALL_PATH"
-export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/browsers
+export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$INSTALL_PATH
+echo "-----> Install path is $INSTALL_PATH"
+echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
 playwright install chromium
+echo "-----> Installation done"

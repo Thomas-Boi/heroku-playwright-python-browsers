@@ -12,6 +12,8 @@ A buildpack to install the Playwright Chromium executable ONLY.
 # Customization
 By default, this will install the necessary exe into a folder called `/browsers` under the build directory (the directory where the root script lives).
 
+To change the this folder's name, override the `INSTALL_PATH` environmental variable.
+
 # Notes
 This was developed for usage with `playwright-python` in mind so support for other languages is unknown.
 
