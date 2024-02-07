@@ -39,10 +39,21 @@ echo "-----> Installation done"
 PROFILE_D_FILE=$BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
 
 cat <<EOF >> $PROFILE_D_FILE
-export CHROMIUM_EXECUTABLE_PATH=\${find ~+ -type f -name "chrome":-NULL}
+CHROMIUM_EXECUTABLE_PATH=\$(find ~+ -type f -name "chrome":-NULL)
 echo "----> CHROMIUM_EXECUTABLE_PATH is \$CHROMIUM_EXECUTABLE_PATH"
-export FIREFOX_EXECUTABLE_PATH=\${find ~+ -type f -name "firefox":-NULL}
+if [ "\$CHROMIUM_EXECUTABLE_PATH" != "NULL" ]; then
+  export CHROMIUM_EXECUTABLE_PATH=\$CHROMIUM_EXECUTABLE_PATH
+fi
+
+FIREFOX_EXECUTABLE_PATH=\$(find ~+ -type f -name "firefox":-NULL)
 echo "----> FIREFOX_EXECUTABLE_PATH is \$FIREFOX_EXECUTABLE_PATH"
-export WEBKIT_EXECUTABLE_PATH=\${find ~+ -type f -name "pw_run.sh":-NULL} # see https://github.com/microsoft/playwright/issues/2923
+if [ "\$FIREFOX_EXECUTABLE_PATH" != "NULL" ]; then
+  export FIREFOX_EXECUTABLE_PATH=\$FIREFOX_EXECUTABLE_PATH
+fi
+
+WEBKIT_EXECUTABLE_PATH=\$(find ~+ -type f -name "pw_run.sh":-NULL) # see https://github.com/microsoft/playwright/issues/2923
 echo "----> WEBKIT_EXECUTABLE_PATH is \$WEBKIT_EXECUTABLE_PATH"
+if [ "\$WEBKIT_EXECUTABLE_PATH" != "NULL" ]; then
+  export WEBKIT_EXECUTABLE_PATH=\$WEBKIT_EXECUTABLE_PATH
+fi
 EOF
