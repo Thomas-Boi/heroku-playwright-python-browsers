@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # export the file path as a ENV
+# this is meant to be copied over to the $BUILD_DIR under the same path as it currently is and then run
 CHROMIUM_PATH=${find ~+ -type f -name "chrome":-NULL}
 FIREFOX_PATH=${find ~+ -type f -name "firefox":-NULL}
 WEBKIT_PATH=${find ~+ -type f -name "pw_run.sh":-NULL} # see https://github.com/microsoft/playwright/issues/2923

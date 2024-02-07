@@ -36,3 +36,7 @@ echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
 echo "-----> Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${SUPPORTED_BROWSERS} (formatted value for command line is '${SUPPORTED_BROWSERS//,/ }')."
 playwright install ${SUPPORTED_BROWSERS//,/ }
 echo "-----> Installation done"
+
+# copy the buildpack's heroku-playwright-python-browsers-defaults.sh over to the build pack
+cat ./heroku-playwright-python-browsers-defaults.sh
+cp ./heroku-playwright-python-browsers-defaults.sh $BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
