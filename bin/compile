@@ -4,14 +4,30 @@
 set -e
 
 BUILD_DIR=$1
+ENV_DIR=$3
 
 # modify the installation location
-if [ -z "$INSTALL_PATH" ]; then
-  INSTALL_PATH="/browsers"
+if [ -z "$BUILDPACK_BROWSERS_INSTALL_PATH" ]; then
+  BUILDPACK_BROWSERS_INSTALL_PATH="/browsers"
 fi
 
-export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$INSTALL_PATH
-echo "-----> Install path is $INSTALL_PATH"
+if [ -z "$PLAYWRIGHT_BUILDPACK_BROWSERS" ]; then
+  SUPPORTED_BROWSERS=${PLAYWRIGHT_BUILDPACK_BROWSERS:-chromium,firefox,webkit}
+	echo "Installing Playwright dependencies (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for $SUPPORTED_BROWSERS."
+fi
+
+export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$BUILDPACK_BROWSERS_INSTALL_PATH
+echo "-----> BROWSERS_INSTALL_PATH is $BUILDPACK_BROWSERS_INSTALL_PATH"
 echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
-playwright install chromium
+echo "-----> Formatted values are ${SUPPORTED_BROWSERS/,/ }"
+playwright install ${SUPPORTED_BROWSERS/,/ }
 echo "-----> Installation done"
+
+# export the file path as a ENV
+CHROMIUM_EXECUTABLE_PATH=${find ~+ -type f -name "chrome"}
+FIREFOX_EXECUTABLE_PATH=${find ~+ -type f -name "geckodriver"}
+WEBKIT_EXECUTABLE_PATH=${find ~+ -type f -name "webkit"}
+
+if [ -v "$CHROMIUM_EXECUTABLE_PATH" ]; then
+  echo $CHROMIUM_EXECUTABLE_PATH > $ENV_DIR/CHROMIUM_EXECUTABLE_PATH
+fi
