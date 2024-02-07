@@ -11,6 +11,20 @@ Follow the steps below.
 
 This buildpack relies on the CLI command `playwright install`. This requires [`playwright`](https://pypi.org/project/playwright/) to be installed. Do this by specifying a `requirements.txt` or any other methods accepted by the Heroku Python buildpacks.
 
+Example `requirements.txt`:
+```
+environs==10.3.0
+exceptiongroup==1.2.0
+greenlet==3.0.1
+gunicorn==21.2.0
+idna==3.6
+iniconfig==2.0.0
+marshmallow==3.20.2
+packaging==23.2
+playwright==1.40.0
+pluggy==1.3.0
+```
+
 ## Buildpack ordering
 
 Order matters for this buildpack to work. Here's the run order that you should should have:
@@ -18,19 +32,18 @@ Order matters for this buildpack to work. Here's the run order that you should s
 ![Buildpack Image](Buildpacks.PNG)
 
 1. The official [Python buildpack](https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-python).
-  - Runs first so that Playwright is available as a CLI tool after the package installation is done
-1. This build pack. [Here's how to add this buildpack to your app](https://devcenter.heroku.com/articles/buildpacks#using-a-third-party-buildpack) by using its Git URL.
-2. The [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack)
-  - **Why?** This buildpack CANNOT install system requirements (i.e. `playwright install --with-deps`) due to restrictions from Heroku. It's only able to install the browser executables. Thus, we rely on [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack) to get the needed system packages.
+    - Runs first so that Playwright is available as a CLI tool after the package installation is done
+2. This build pack. [Here's how to add this buildpack to your app](https://devcenter.heroku.com/articles/buildpacks#using-a-third-party-buildpack) by using its Git URL.
+3. The [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack)
 
 
 ## Customize the following config variables:
 1. `PLAYWRIGHT_BUILDPACK_BROWSERS` accepts a comma-separated list of the browser names. By default, it's installing executables for `chromium,firefox,webkit`.
-  - E.g. To only install Chromium dependencies, set the variable to `chromium`. This will reduce the slug size in the end too. 
-    - **NOTE**: this is what the author uses, usage with the other 2 browsers are unknown. Feel free to test them out and let me know if they work and I'll update the docs.
-  - This config variable is intended to be shared with [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
+    - E.g. To only install Chromium dependencies, set the variable to `chromium`. This will reduce the slug size in the end too. 
+        - **NOTE**: this is what the author uses, usage with the other 2 browsers are unknown. Feel free to test them out and let me know if they work and I'll update the docs.
+    - This config variable is intended to be shared with another variable with the same name from [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
 2. `BUILDPACK_BROWSERS_INSTALL_PATH` is the path where the browsers will be installed. Its default value is `browsers` and it's a relative path starting from the [`BUILD_DIR`](https://devcenter.heroku.com/articles/buildpack-api#bin-compile) (the starting directory of the compiled slug to be used by Heroku). It's necessary to have the installed browsers within the `BUILD_DIR` to have the file included by the time Heroku starts the dyno.
-  - E.g. To install in the directory `utils/browsers`, set the variable to `utils/browsers`.
+    - E.g. To install in the directory `utils/browsers`, set the variable to `utils/browsers`.
 
 ## Modify your browser creation script
 
@@ -63,13 +76,18 @@ The command to install the system packages along with the browser is `playwright
 Here are a few things to consider:
 - This buildpack is meant for Python Playwright and was developed with Chromium in mind. Any other browser/Playwright distro is not tested by me so I offer no guarantees there
 - Verify that the installation is successful. Look at the build logs, you should see progress bar for the executable installations
-  - Verify that the executable paths are properly set. Look through the logs for something like this
-  ```
-  ```
-  - You can also `heroku run bash` into the dyno and search for the installation folder to verify that the exe are downloaded.
+    - Verify that the executable paths are properly set. Look through the logs (the app's log, not the buildpack) for something like this
+    ```
+    2024-02-07T21:57:03.415283+00:00 app[release.8706]: ----> CHROMIUM_EXECUTABLE_PATH is /app/browsers/chromium-1091/chrome-linux/chrome
+    2024-02-07T21:57:03.555317+00:00 app[release.8706]: ----> FIREFOX_EXECUTABLE_PATH is /app/browsers/firefox-1429/firefox/firefox
+    2024-02-07T21:57:03.690086+00:00 app[release.8706]: ----> WEBKIT_EXECUTABLE_PATH is /app/browsers/webkit-1944/pw_run.sh
+    ```
+    - You can also `heroku run bash` into the dyno and search for the installation folder to:
+        - Verify that the exe are downloaded by going into `BUILDPACK_BROWSERS_INSTALL_PATH`
+        - Verify that the env variables like `CHROMIUM_EXECUTABLE_PATH` are set properly
 
 # Credits
-A lot of code and patterns were borrowed from [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
+A lot of code and patterns were taken from [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
 
-Idea for the buildpack were borrowed from  [playwright-python-heroku-buildpack](https://github.com/binoche9/playwright-python-heroku-buildpack).
+Idea for the buildpack was inspired by [playwright-python-heroku-buildpack](https://github.com/binoche9/playwright-python-heroku-buildpack).
 

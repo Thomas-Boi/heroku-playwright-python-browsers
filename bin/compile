@@ -6,6 +6,7 @@ set -e
 BUILD_DIR=$1
 ENV_DIR=$3
 
+# taken (and modified a bit) from https://devcenter.heroku.com/articles/buildpack-api#bin-compile 
 export_env_dir() {
   acceptlist_regex='(BUILDPACK_BROWSERS_INSTALL_PATH|PLAYWRIGHT_BUILDPACK_BROWSERS)'
   denylist_regex='^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'
@@ -23,7 +24,6 @@ export_env_dir
 # modify the installation location
 BUILDPACK_BROWSERS_INSTALL_PATH=${BUILDPACK_BROWSERS_INSTALL_PATH:-"/browsers"}
 
-# follow format of  https://github.com/playwright-community/heroku-playwright-buildpack/blob/master/bin/compile
 PLAYWRIGHT_BUILDPACK_BROWSERS=${PLAYWRIGHT_BUILDPACK_BROWSERS:-chromium,firefox,webkit}
 
 export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$BUILDPACK_BROWSERS_INSTALL_PATH
@@ -31,7 +31,6 @@ echo "-----> BUILDPACK_BROWSERS_INSTALL_PATH is $BUILDPACK_BROWSERS_INSTALL_PATH
 echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
 echo "-----> Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${PLAYWRIGHT_BUILDPACK_BROWSERS} (formatted value for command line is '${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ }')."
 playwright install ${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ }
-# chmod -R +x $PLAYWRIGHT_BROWSERS_PATH
 echo "-----> Installation done"
 
 # export the file path as a ENV
