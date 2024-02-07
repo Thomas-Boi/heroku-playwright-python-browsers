@@ -21,22 +21,45 @@ export_env_dir() {
 export_env_dir
 
 # modify the installation location
-if [ -z "$BUILDPACK_BROWSERS_INSTALL_PATH" ]; then
-  BUILDPACK_BROWSERS_INSTALL_PATH="/browsers"
-fi
+BUILDPACK_BROWSERS_INSTALL_PATH=${BUILDPACK_BROWSERS_INSTALL_PATH:-"/browsers"}
 
-if [ -z "$PLAYWRIGHT_BUILDPACK_BROWSERS" ]; then
-  # follow format of  https://github.com/playwright-community/heroku-playwright-buildpack/blob/master/bin/compile
-  SUPPORTED_BROWSERS=${PLAYWRIGHT_BUILDPACK_BROWSERS:-chromium,firefox,webkit}
-fi
+# follow format of  https://github.com/playwright-community/heroku-playwright-buildpack/blob/master/bin/compile
+PLAYWRIGHT_BUILDPACK_BROWSERS=${PLAYWRIGHT_BUILDPACK_BROWSERS:-chromium,firefox,webkit}
 
 export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$BUILDPACK_BROWSERS_INSTALL_PATH
-echo "-----> BROWSERS_INSTALL_PATH is $BUILDPACK_BROWSERS_INSTALL_PATH"
+echo "-----> BUILDPACK_BROWSERS_INSTALL_PATH is $BUILDPACK_BROWSERS_INSTALL_PATH"
 echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
-echo "-----> Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${SUPPORTED_BROWSERS} (formatted value for command line is '${SUPPORTED_BROWSERS//,/ }')."
-playwright install ${SUPPORTED_BROWSERS//,/ }
+echo "-----> Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${PLAYWRIGHT_BUILDPACK_BROWSERS} (formatted value for command line is '${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ }')."
+playwright install ${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ }
 echo "-----> Installation done"
 
-# copy the buildpack's heroku-playwright-python-browsers-defaults.sh over to the build pack
-cat ./heroku-playwright-python-browsers-defaults.sh
-cp ./heroku-playwright-python-browsers-defaults.sh $BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
+# export the file path as a ENV
+# this is meant to be copied over to the $BUILD_DIR under .profile.d/heroku-playwright-python-browsers-defaults.sh and then run
+
+PROFILE_D_FILE=$BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
+
+if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"chromium"*  ]; then
+  cat <<EOF >> $PROFILE_D_FILE
+  PATH=\${find ~+ -type f -name "chrome":-NULL}
+  echo "----> CHROMIUM_EXECUTABLE_PATH is \$PATH"
+  export CHROMIUM_EXECUTABLE_PATH=\$PATH
+  EOF
+fi
+
+if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"firefox"*  ]; then
+  cat <<EOF >> $PROFILE_D_FILE
+  PATH=${find ~+ -type f -name "firefox":-NULL}
+  echo "----> FIREFOX_EXECUTABLE_PATH is \$PATH"
+  export FIREFOX_EXECUTABLE_PATH=\$PATH
+  EOF
+fi
+
+if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"webkit"*  ]; then
+  cat <<EOF >> $PROFILE_D_FILE
+  PATH=${find ~+ -type f -name "pw_run.sh":-NULL} # see https://github.com/microsoft/playwright/issues/2923
+  echo "----> WEBKIT_EXECUTABLE_PATH is \$PATH"
+  export WEBKIT_EXECUTABLE_PATH=\$PATH
+  EOF
+fi
+
+cat $PROFILE_D_FILE
