@@ -6,6 +6,20 @@ set -e
 BUILD_DIR=$1
 ENV_DIR=$3
 
+export_env_dir() {
+  acceptlist_regex='(BUILDPACK_BROWSERS_INSTALL_PATH|PLAYWRIGHT_BUILDPACK_BROWSERS)'
+  denylist_regex='^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'
+  if [ -d "$ENV_DIR" ]; then
+    for e in $(ls $ENV_DIR); do
+      echo "$e" | grep -E "$acceptlist_regex" | grep -qvE "$denylist_regex" &&
+      export "$e=$(cat $ENV_DIR/$e)"
+      :
+    done
+  fi
+}
+
+export_env_dir
+
 # modify the installation location
 if [ -z "$BUILDPACK_BROWSERS_INSTALL_PATH" ]; then
   BUILDPACK_BROWSERS_INSTALL_PATH="/browsers"
@@ -19,19 +33,6 @@ fi
 export PLAYWRIGHT_BROWSERS_PATH=$BUILD_DIR/$BUILDPACK_BROWSERS_INSTALL_PATH
 echo "-----> BROWSERS_INSTALL_PATH is $BUILDPACK_BROWSERS_INSTALL_PATH"
 echo "-----> Browsers will be installed in $PLAYWRIGHT_BROWSERS_PATH"
-echo "----->Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${SUPPORTED_BROWSERS//,/ }."
+echo "-----> Installing Playwright executables (env: PLAYWRIGHT_BUILDPACK_BROWSERS) for ${SUPPORTED_BROWSERS} (formatted value for command line is '${SUPPORTED_BROWSERS//,/ }')."
 playwright install ${SUPPORTED_BROWSERS//,/ }
 echo "-----> Installation done"
-
-# export the file path as a ENV
-CHROMIUM_EXECUTABLE_PATH=./browsers/chromium-1091/chrome-linux/chrome
-# FIREFOX_EXECUTABLE_PATH=${find ~+ -type f -name "geckodriver"}
-# WEBKIT_EXECUTABLE_PATH=${find ~+ -type f -name "webkit"}
-
-echo "----> CHROMIUM_EXECUTABLE_PATH is $CHROMIUM_EXECUTABLE_PATH"
-# echo "----> FIREFOX_EXECUTABLE_PATH is $FIREFOX_EXECUTABLE_PATH"
-# echo "----> WEBKIT_EXECUTABLE_PATH is $WEBKIT_EXECUTABLE_PATH"
-
-if [ -v "$CHROMIUM_EXECUTABLE_PATH" ]; then
-  echo $CHROMIUM_EXECUTABLE_PATH > $ENV_DIR/CHROMIUM_EXECUTABLE_PATH
-fi
