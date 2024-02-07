@@ -24,13 +24,13 @@ playwright install ${SUPPORTED_BROWSERS//,/ }
 echo "-----> Installation done"
 
 # export the file path as a ENV
-CHROMIUM_EXECUTABLE_PATH=${find ~+ -type f -name "chrome"}
-FIREFOX_EXECUTABLE_PATH=${find ~+ -type f -name "geckodriver"}
-WEBKIT_EXECUTABLE_PATH=${find ~+ -type f -name "webkit"}
+CHROMIUM_EXECUTABLE_PATH=./browsers/chromium-1091/chrome-linux/chrome
+# FIREFOX_EXECUTABLE_PATH=${find ~+ -type f -name "geckodriver"}
+# WEBKIT_EXECUTABLE_PATH=${find ~+ -type f -name "webkit"}
 
 echo "----> CHROMIUM_EXECUTABLE_PATH is $CHROMIUM_EXECUTABLE_PATH"
-echo "----> FIREFOX_EXECUTABLE_PATH is $FIREFOX_EXECUTABLE_PATH"
-echo "----> WEBKIT_EXECUTABLE_PATH is $WEBKIT_EXECUTABLE_PATH"
+# echo "----> FIREFOX_EXECUTABLE_PATH is $FIREFOX_EXECUTABLE_PATH"
+# echo "----> WEBKIT_EXECUTABLE_PATH is $WEBKIT_EXECUTABLE_PATH"
 
 if [ -v "$CHROMIUM_EXECUTABLE_PATH" ]; then
   echo $CHROMIUM_EXECUTABLE_PATH > $ENV_DIR/CHROMIUM_EXECUTABLE_PATH
