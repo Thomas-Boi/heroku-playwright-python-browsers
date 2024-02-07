@@ -38,28 +38,14 @@ echo "-----> Installation done"
 
 PROFILE_D_FILE=$BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
 
-if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"chromium"*  ]; then
-  cat <<EOF >> $PROFILE_D_FILE
-  PATH=\${find ~+ -type f -name "chrome":-NULL}
-  echo "----> CHROMIUM_EXECUTABLE_PATH is \$PATH"
-  export CHROMIUM_EXECUTABLE_PATH=\$PATH
-  EOF
-fi
-
-if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"firefox"*  ]; then
-  cat <<EOF >> $PROFILE_D_FILE
-  PATH=${find ~+ -type f -name "firefox":-NULL}
-  echo "----> FIREFOX_EXECUTABLE_PATH is \$PATH"
-  export FIREFOX_EXECUTABLE_PATH=\$PATH
-  EOF
-fi
-
-if [ "$PLAYWRIGHT_BUILDPACK_BROWSERS" == *"webkit"*  ]; then
-  cat <<EOF >> $PROFILE_D_FILE
-  PATH=${find ~+ -type f -name "pw_run.sh":-NULL} # see https://github.com/microsoft/playwright/issues/2923
-  echo "----> WEBKIT_EXECUTABLE_PATH is \$PATH"
-  export WEBKIT_EXECUTABLE_PATH=\$PATH
-  EOF
-fi
-
-cat $PROFILE_D_FILE
+cat <<EOF >> $PROFILE_D_FILE
+PATH=\${find ~+ -type f -name "chrome":-NULL}
+echo "----> CHROMIUM_EXECUTABLE_PATH is \$PATH"
+export CHROMIUM_EXECUTABLE_PATH=\$PATH
+PATH=\${find ~+ -type f -name "firefox":-NULL}
+echo "----> FIREFOX_EXECUTABLE_PATH is \$PATH"
+export FIREFOX_EXECUTABLE_PATH=\$PATH
+PATH=\${find ~+ -type f -name "pw_run.sh":-NULL} # see https://github.com/microsoft/playwright/issues/2923
+echo "----> WEBKIT_EXECUTABLE_PATH is \$PATH"
+export WEBKIT_EXECUTABLE_PATH=\$PATH
+EOF
