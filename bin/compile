@@ -38,6 +38,9 @@ echo "-----> Installation done"
 
 cat <<EOF > $BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
 CHROMIUM_EXECUTABLE_PATH=\$(find ~+ -type f -name "chrome")
+if [ "\$CHROMIUM_EXECUTABLE_PATH" = "" ]; then
+  CHROMIUM_EXECUTABLE_PATH=\$(find ~+ -type f -name "headless_shell")
+fi
 echo "----> CHROMIUM_EXECUTABLE_PATH is \$CHROMIUM_EXECUTABLE_PATH"
 if [ "\$CHROMIUM_EXECUTABLE_PATH" != "" ]; then
   export CHROMIUM_EXECUTABLE_PATH=\$CHROMIUM_EXECUTABLE_PATH
