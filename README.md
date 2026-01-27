@@ -44,7 +44,9 @@ Order matters for this buildpack to work. Here's the run order that you should s
     - E.g. To only install Chromium dependencies, set the variable to `chromium`. This will reduce the slug size in the end too. 
         - **NOTE**: this is what the author uses, usage with the other 2 browsers are unknown. Feel free to test them out and let me know if they work and I'll update the docs.
     - This config variable is intended to be shared with another variable with the same name from [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
-2. `BUILDPACK_BROWSERS_INSTALL_PATH` is the path where the browsers will be installed. Its default value is `browsers` and it's a relative path starting from the [`BUILD_DIR`](https://devcenter.heroku.com/articles/buildpack-api#bin-compile) (the starting directory of the compiled slug to be used by Heroku). It's necessary to have the installed browsers within the `BUILD_DIR` to have the file included by the time Heroku starts the dyno.
+2. `PLAYWRIGHT_INSTALL_OPTIONS` will be passed in after the `playwright install` command and after the `PLAYWRIGHT_BUILDPACK_BROWSERS` command. 
+    - e.. If your `PLAYWRIGHT_INSTALL_OPTIONS` is `--only-shell`, the final command would be `playwright install $PLAYWRIGHT_BUILDPACK_BROWSERS --only-shell` 
+3. `BUILDPACK_BROWSERS_INSTALL_PATH` is the path where the browsers will be installed. Its default value is `browsers` and it's a relative path starting from the [`BUILD_DIR`](https://devcenter.heroku.com/articles/buildpack-api#bin-compile) (the starting directory of the compiled slug to be used by Heroku). It's necessary to have the installed browsers within the `BUILD_DIR` to have the file included by the time Heroku starts the dyno.
     - E.g. To install in the directory `utils/browsers`, set the variable to `utils/browsers`.
 
 ## Modify your browser creation script
