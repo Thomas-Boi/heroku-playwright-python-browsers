@@ -8,18 +8,18 @@ ENV_DIR=$3
 
 # taken (and modified a bit) from https://devcenter.heroku.com/articles/buildpack-api#bin-compile 
 export_env_dir() {
-  acceptlist_regex='(BUILDPACK_BROWSERS_INSTALL_PATH|PLAYWRIGHT_BUILDPACK_BROWSERS)'
+  acceptlist_regex='(BUILDPACK_BROWSERS_INSTALL_PATH|PLAYWRIGHT_BUILDPACK_BROWSERS|PLAYWRIGHT_INSTALL_OPTIONS)'
   denylist_regex='^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'
   if [ -d "$ENV_DIR" ]; then
-    for e in $(ls $ENV_DIR); do
-      echo "$e" | grep -E "$acceptlist_regex" | grep -qvE "$denylist_regex" &&
-      export "$e=$(cat $ENV_DIR/$e)"
-      :
+    for e in $(ls "$ENV_DIR"); do
+      if echo "$e" | grep -E "$acceptlist_regex" | grep -qvE "$denylist_regex"; then
+        export "$e=$(cat "$ENV_DIR/$e")"
+      fi
     done
   fi
 }
 
-export_env_dir()
+export_env_dir
 
 # modify the installation location
 BUILDPACK_BROWSERS_INSTALL_PATH=${BUILDPACK_BROWSERS_INSTALL_PATH:-/browsers}
