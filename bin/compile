@@ -36,34 +36,29 @@ echo "-----> Playwright Install options (env: PLAYWRIGHT_INSTALL_OPTIONS) are ${
 playwright install ${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ } ${PLAYWRIGHT_INSTALL_OPTIONS}
 echo "-----> Installation done"
 
-CHROMIUM_EXECUTABLE_PATH=$(find ~+ -type f -name "chrome")
-if [ -z "$CHROMIUM_EXECUTABLE_PATH" ]; then
-  CHROMIUM_EXECUTABLE_PATH=$(find ~+ -type f -name "chrome-headless-shell")
-fi
-echo "----> CHROMIUM_EXECUTABLE_PATH is $CHROMIUM_EXECUTABLE_PATH"
-
-FIREFOX_EXECUTABLE_PATH=$(find ~+ -type f -name "firefox")
-echo "----> FIREFOX_EXECUTABLE_PATH is $FIREFOX_EXECUTABLE_PATH"
-
-WEBKIT_EXECUTABLE_PATH=$(find ~+ -type f -name "pw_run.sh") # see https://github.com/microsoft/playwright/issues/2923
-echo "----> WEBKIT_EXECUTABLE_PATH is $WEBKIT_EXECUTABLE_PATH"
-
 # export the file paths as ENV
 # this is meant to be copied over to the $BUILD_DIR under .profile.d/heroku-playwright-python-browsers-defaults.sh and then run automatically
 # this will ensure the ENVs exported is available in the final dyno
 
 cat <<EOF > $BUILD_DIR/.profile.d/heroku-playwright-python-browsers-defaults.sh
+CHROMIUM_EXECUTABLE_PATH=\$(find ~+ -type f -name "chrome")
+ 
+if [ "\$CHROMIUM_EXECUTABLE_PATH" = "" ]; then
+  CHROMIUM_EXECUTABLE_PATH=\$(find ~+ -type f -name "chrome-headless-shell")
+fi
 
 echo "----> CHROMIUM_EXECUTABLE_PATH is \$CHROMIUM_EXECUTABLE_PATH"
 if [ "\$CHROMIUM_EXECUTABLE_PATH" != "" ]; then
   export CHROMIUM_EXECUTABLE_PATH=\$CHROMIUM_EXECUTABLE_PATH
 fi
 
+FIREFOX_EXECUTABLE_PATH=\$(find ~+ -type f -name "firefox")
 echo "----> FIREFOX_EXECUTABLE_PATH is \$FIREFOX_EXECUTABLE_PATH"
 if [ "\$FIREFOX_EXECUTABLE_PATH" != "" ]; then
   export FIREFOX_EXECUTABLE_PATH=\$FIREFOX_EXECUTABLE_PATH
 fi
 
+WEBKIT_EXECUTABLE_PATH=\$(find ~+ -type f -name "pw_run.sh") # see https://github.com/microsoft/playwright/issues/2923
 echo "----> WEBKIT_EXECUTABLE_PATH is \$WEBKIT_EXECUTABLE_PATH"
 if [ "\$WEBKIT_EXECUTABLE_PATH" != "" ]; then
   export WEBKIT_EXECUTABLE_PATH=\$WEBKIT_EXECUTABLE_PATH
