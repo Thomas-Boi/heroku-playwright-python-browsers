@@ -22,7 +22,7 @@ export_env_dir() {
 export_env_dir()
 
 # modify the installation location
-BUILDPACK_BROWSERS_INSTALL_PATH=${BUILDPACK_BROWSERS_INSTALL_PATH:-"/browsers"}
+BUILDPACK_BROWSERS_INSTALL_PATH=${BUILDPACK_BROWSERS_INSTALL_PATH:-/browsers}
 
 PLAYWRIGHT_BUILDPACK_BROWSERS=${PLAYWRIGHT_BUILDPACK_BROWSERS:-chromium,firefox,webkit}
 
@@ -37,7 +37,7 @@ playwright install ${PLAYWRIGHT_BUILDPACK_BROWSERS//,/ } ${PLAYWRIGHT_INSTALL_OP
 echo "-----> Installation done"
 
 CHROMIUM_EXECUTABLE_PATH=$(find ~+ -type f -name "chrome")
-if [ $CHROMIUM_EXECUTABLE_PATH="" ]; then
+if [ -z "$CHROMIUM_EXECUTABLE_PATH" ]; then
   CHROMIUM_EXECUTABLE_PATH=$(find ~+ -type f -name "chrome-headless-shell")
 fi
 echo "----> CHROMIUM_EXECUTABLE_PATH is $CHROMIUM_EXECUTABLE_PATH"
