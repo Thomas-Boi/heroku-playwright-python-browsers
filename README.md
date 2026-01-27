@@ -1,7 +1,9 @@
 # heroku-playwright-python-browsers
 A buildpack to install Playwright browser executables for usage with Python on Heroku. 
 
-**NOTE**: this buildpack and the following instructions was developed for usage with Chromium in mind. It is likely to work with Firefox and Webkit as well BUT hasn't been tested by the author. You are on your own when using Firefox and Webkit since I don't use those tools. Let me know if this buildpack works though and I'll update the docs.
+**NOTE**: 
+- *This project is no longer continued by the author. WYSIWYG.*
+- this buildpack and the following instructions was developed for usage with Chromium in mind. It is likely to work with Firefox and Webkit as well BUT hasn't been tested by the author. You are on your own when using Firefox and Webkit since I don't use those tools. Let me know if this buildpack works though and I'll update the docs.
 
 # Usage
 
@@ -42,15 +44,17 @@ Order matters for this buildpack to work. Here's the run order that you should s
     - E.g. To only install Chromium dependencies, set the variable to `chromium`. This will reduce the slug size in the end too. 
         - **NOTE**: this is what the author uses, usage with the other 2 browsers are unknown. Feel free to test them out and let me know if they work and I'll update the docs.
     - This config variable is intended to be shared with another variable with the same name from [heroku-playwright-buildpack](https://github.com/playwright-community/heroku-playwright-buildpack).
-2. `BUILDPACK_BROWSERS_INSTALL_PATH` is the path where the browsers will be installed. Its default value is `browsers` and it's a relative path starting from the [`BUILD_DIR`](https://devcenter.heroku.com/articles/buildpack-api#bin-compile) (the starting directory of the compiled slug to be used by Heroku). It's necessary to have the installed browsers within the `BUILD_DIR` to have the file included by the time Heroku starts the dyno.
+2. `PLAYWRIGHT_INSTALL_OPTIONS` will be passed in after the `playwright install` command and after the `PLAYWRIGHT_BUILDPACK_BROWSERS` command. 
+    - e.. If your `PLAYWRIGHT_INSTALL_OPTIONS` is `--only-shell`, the final command would be `playwright install $PLAYWRIGHT_BUILDPACK_BROWSERS --only-shell` 
+3. `BUILDPACK_BROWSERS_INSTALL_PATH` is the path where the browsers will be installed. Its default value is `browsers` and it's a relative path starting from the [`BUILD_DIR`](https://devcenter.heroku.com/articles/buildpack-api#bin-compile) (the starting directory of the compiled slug to be used by Heroku). It's necessary to have the installed browsers within the `BUILD_DIR` to have the file included by the time Heroku starts the dyno.
     - E.g. To install in the directory `utils/browsers`, set the variable to `utils/browsers`.
 
 ## Modify your browser creation script
 
 Since the browsers are installed in a non-default location, we have to specify the executable path when we create the browser instances. The following config variables are exported by the buildpack IF the appropriate browsers are installed:
-- `CHROMIUM_EXECUTABLE_PATH` 
-- `FIREFOX_EXECUTABLE_PATH`
-- `WEBKIT_EXECUTABLE_PATH`
+- `CHROMIUM_EXECUTABLE_PATH`: path to the Chromium exe. If `--only-shell` or `chromium-headless-shell` is passed, this will point to the headless exe specifically
+- `FIREFOX_EXECUTABLE_PATH`: path to Firefox exe.
+- `WEBKIT_EXECUTABLE_PATH`: path to Webkit exe.
 
 For example, if you use `PLAYWRIGHT_BUILDPACK_BROWSERS=chromium`, the script will only install the executable for Chromium and only `CHROMIUM_EXECUTABLE_PATH` will be set. 
 
