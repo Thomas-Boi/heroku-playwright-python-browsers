@@ -1,7 +1,9 @@
 # heroku-playwright-python-browsers
 A buildpack to install Playwright browser executables for usage with Python on Heroku. 
 
-**NOTE**: this buildpack and the following instructions was developed for usage with Chromium in mind. It is likely to work with Firefox and Webkit as well BUT hasn't been tested by the author. You are on your own when using Firefox and Webkit since I don't use those tools. Let me know if this buildpack works though and I'll update the docs.
+**NOTE**: 
+- *This project is no longer continued by the author. WYSIWYG.*
+- this buildpack and the following instructions was developed for usage with Chromium in mind. It is likely to work with Firefox and Webkit as well BUT hasn't been tested by the author. You are on your own when using Firefox and Webkit since I don't use those tools. Let me know if this buildpack works though and I'll update the docs.
 
 # Usage
 
@@ -48,9 +50,9 @@ Order matters for this buildpack to work. Here's the run order that you should s
 ## Modify your browser creation script
 
 Since the browsers are installed in a non-default location, we have to specify the executable path when we create the browser instances. The following config variables are exported by the buildpack IF the appropriate browsers are installed:
-- `CHROMIUM_EXECUTABLE_PATH` 
-- `FIREFOX_EXECUTABLE_PATH`
-- `WEBKIT_EXECUTABLE_PATH`
+- `CHROMIUM_EXECUTABLE_PATH`: path to the Chromium exe. If `--only-shell` or `chromium-headless-shell` is passed, this will point to the headless exe specifically
+- `FIREFOX_EXECUTABLE_PATH`: path to Firefox exe.
+- `WEBKIT_EXECUTABLE_PATH`: path to Webkit exe.
 
 For example, if you use `PLAYWRIGHT_BUILDPACK_BROWSERS=chromium`, the script will only install the executable for Chromium and only `CHROMIUM_EXECUTABLE_PATH` will be set. 
 
